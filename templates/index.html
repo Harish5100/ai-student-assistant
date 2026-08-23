@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Student Assistant | Powered by Google Gemini</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <!-- Header / Navigation -->
+  <header class="app-header">
+    <div class="container header-content">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">AI Student Assistant</span>
+          <span class="brand-badge">Google Gemini 2.5</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle Dark/Light Mode">
+          <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container hero-container">
+      <div class="hero-tag">
+        <span class="pulse-dot"></span> Smart Learning Companion
+      </div>
+      <h1>Supercharge Your Learning with AI</h1>
+      <p class="hero-subtitle">Ask complex academic questions, test your knowledge with interactive multiple-choice quizzes, and generate customized daily study schedules instantly.</p>
+
+      <!-- Quick Topic Chips -->
+      <div class="quick-chips">
+        <span class="chips-label">Try asking about:</span>
+        <button class="chip" onclick="fillPrompt('ask', 'Explain Machine Learning algorithms and gradient descent in simple terms')">🤖 Machine Learning</button>
+        <button class="chip" onclick="fillPrompt('quiz', 'Python Data Structures')">🐍 Python Quiz</button>
+        <button class="chip" onclick="fillPrompt('plan', 'SQL Database Design & Normalization', 7)">📊 7-Day SQL Plan</button>
+        <button class="chip" onclick="fillPrompt('ask', 'What is the time complexity of QuickSort vs MergeSort?')">⚡ Algorithm Analysis</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Tools Section -->
+  <main class="container main-content">
+    <div class="grid">
+      <!-- Card 1: Ask AI -->
+      <section class="card tool-card" id="askSection">
+        <div class="card-header">
+          <div class="card-icon ask-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div>
+            <h2>Ask AI Tutor</h2>
+            <p class="muted">Get step-by-step academic explanations and examples.</p>
+          </div>
+        </div>
+        <div class="form-group">
+          <textarea id="question" rows="4" placeholder="e.g., Explain standard deviation and variance with an easy example..."></textarea>
+        </div>
+        <button id="askBtn" class="btn btn-primary" onclick="askAI()">
+          <span class="btn-text">Ask AI</span>
+          <span class="btn-spinner hidden"></span>
+        </button>
+        <div id="answerWrapper" class="result-wrapper hidden">
+          <div class="result-header">
+            <span class="result-title">Response</span>
+            <button class="btn-copy" onclick="copyToClipboard('answerContent')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copy
+            </button>
+          </div>
+          <div id="answerContent" class="result-body markdown-body"></div>
+        </div>
+      </section>
+
+      <!-- Card 2: Interactive Quiz -->
+      <section class="card tool-card" id="quizSection">
+        <div class="card-header">
+          <div class="card-icon quiz-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </div>
+          <div>
+            <h2>Interactive Quiz</h2>
+            <p class="muted">Generate 5 multiple-choice practice questions.</p>
+          </div>
+        </div>
+        <div class="form-group">
+          <input id="quizTopic" placeholder="e.g., Object Oriented Programming in Java">
+        </div>
+        <button id="quizBtn" class="btn btn-primary" onclick="generateQuiz()">
+          <span class="btn-text">Generate Quiz</span>
+          <span class="btn-spinner hidden"></span>
+        </button>
+        <div id="quizResultWrapper" class="result-wrapper hidden">
+          <div id="quizHeader" class="quiz-summary-bar hidden">
+            <span id="quizTitle" class="quiz-title">Quiz</span>
+            <span id="quizScoreBadge" class="score-badge">Score: 0 / 5</span>
+          </div>
+          <div id="quizContainer" class="quiz-container"></div>
+        </div>
+      </section>
+
+      <!-- Card 3: Study Plan -->
+      <section class="card tool-card" id="planSection">
+        <div class="card-header">
+          <div class="card-icon plan-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <div>
+            <h2>Study Plan Generator</h2>
+            <p class="muted">Create a structured day-by-day learning blueprint.</p>
+          </div>
+        </div>
+        <div class="form-group row-inputs">
+          <div class="input-grow">
+            <label for="planTopic" class="input-label">Topic</label>
+            <input id="planTopic" placeholder="e.g., Calculus II Integration">
+          </div>
+          <div class="input-shrink">
+            <label for="planDays" class="input-label">Days (1–30)</label>
+            <input id="planDays" type="number" min="1" max="30" value="7">
+          </div>
+        </div>
+        <button id="planBtn" class="btn btn-primary" onclick="generatePlan()">
+          <span class="btn-text">Create Study Plan</span>
+          <span class="btn-spinner hidden"></span>
+        </button>
+        <div id="planResultWrapper" class="result-wrapper hidden">
+          <div class="result-header">
+            <span class="result-title">Study Plan</span>
+            <button class="btn-copy" onclick="copyToClipboard('planContent')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copy
+            </button>
+          </div>
+          <div id="planContent" class="result-body markdown-body"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <div class="container footer-content">
+      <p>AI Student Assistant • Powered by <strong>Flask</strong> & <strong>Google Gemini API</strong></p>
+    </div>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast hidden">Copied to clipboard!</div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
+
