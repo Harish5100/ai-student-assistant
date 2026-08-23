@@ -4,6 +4,8 @@ from flask import Flask, render_template, request, jsonify
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+import os
+api_key = os.getenv("GEMINI_API_KEY")
 
 load_dotenv()
 
