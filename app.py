@@ -79,16 +79,35 @@ def quiz():
     data = request.get_json(silent=True) or {}
     topic = (data.get("topic") or "").strip()
 
+    raw_count = data.get("count") or data.get("num_questions")
+    try:
+        count = int(raw_count) if raw_count is not None else 5
+    except (ValueError, TypeError):
+        count = 5
+    count = max(1, min(count, 20))
+
+    level = (data.get("level") or data.get("difficulty") or "medium").strip().lower()
+    if level not in ["easy", "medium", "hard"]:
+        level = "medium"
+
+    level_descriptions = {
+        "easy": "Easy level (fundamental definitions, basic concepts, straightforward questions)",
+        "medium": "Medium level (standard college level, concept application, practical scenarios)",
+        "hard": "Hard level (advanced topics, complex problem solving, edge cases, subtle distinctions)"
+    }
+    level_desc = level_descriptions.get(level, level_descriptions["medium"])
+
     if not topic:
         return jsonify({"error": "Please enter a topic."}), 400
 
     prompt = f"""
-Create a short practice quiz for a college student about: {topic}
+Create a practice quiz for a college student about: {topic}
+Difficulty Level: {level.capitalize()} ({level_desc})
 
-Create exactly 5 multiple-choice questions in strict JSON format.
+Create exactly {count} multiple-choice questions in strict JSON format.
 The JSON object must have this exact structure:
 {{
-  "title": "{topic} Quiz",
+  "title": "{topic} Quiz ({level.capitalize()} Level)",
   "questions": [
     {{
       "id": 1,
@@ -105,7 +124,8 @@ The JSON object must have this exact structure:
   ]
 }}
 
-Provide exactly 5 questions. Make sure options are labeled starting with A), B), C), D).
+Provide exactly {count} questions appropriate for {level.capitalize()} difficulty.
+Make sure options are labeled starting with A), B), C), D).
 Ensure correct_answer is strictly one of "A", "B", "C", or "D".
 """
     try:
@@ -120,6 +140,7 @@ Ensure correct_answer is strictly one of "A", "B", "C", or "D".
     except Exception:
         app.logger.exception("Quiz generation failed")
         return jsonify({"error": "Quiz generation failed. Check your API key and server configuration."}), 500
+
 
 
 @app.post("/api/study-plan")

@@ -331,7 +331,7 @@ body {
   margin-bottom: 6px;
 }
 
-textarea, input {
+textarea, input, select {
   width: 100%;
   padding: 12px 14px;
   background: var(--bg-surface);
@@ -343,7 +343,21 @@ textarea, input {
   outline: none;
 }
 
-textarea:focus, input:focus {
+select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 38px;
+}
+
+option {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+textarea:focus, input:focus, select:focus {
   border-color: var(--accent-primary);
   box-shadow: 0 0 0 3px var(--accent-glow);
 }

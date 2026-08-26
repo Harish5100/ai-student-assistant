@@ -93,11 +93,32 @@
           </div>
           <div>
             <h2>Interactive Quiz</h2>
-            <p class="muted">Generate 5 multiple-choice practice questions.</p>
+            <p class="muted">Generate customized practice questions by level and count.</p>
           </div>
         </div>
         <div class="form-group">
+          <label for="quizTopic" class="input-label">Topic</label>
           <input id="quizTopic" placeholder="e.g., Object Oriented Programming in Java">
+        </div>
+        <div class="form-group row-inputs">
+          <div class="input-grow">
+            <label for="quizLevel" class="input-label">Difficulty Level</label>
+            <select id="quizLevel">
+              <option value="easy">🌱 Easy (Basic Concepts)</option>
+              <option value="medium" selected>⚖️ Medium (Standard College)</option>
+              <option value="hard">⚡ Hard (Advanced / Edge Cases)</option>
+            </select>
+          </div>
+          <div class="input-grow">
+            <label for="quizCount" class="input-label">Questions</label>
+            <select id="quizCount">
+              <option value="3">3 Questions</option>
+              <option value="5" selected>5 Questions</option>
+              <option value="10">10 Questions</option>
+              <option value="15">15 Questions</option>
+              <option value="20">20 Questions</option>
+            </select>
+          </div>
         </div>
         <button id="quizBtn" class="btn btn-primary" onclick="generateQuiz()">
           <span class="btn-text">Generate Quiz</span>

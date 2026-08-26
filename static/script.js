@@ -130,7 +130,12 @@ let quizState = {
 
 async function generateQuiz() {
   const topicEl = document.getElementById("quizTopic");
+  const levelEl = document.getElementById("quizLevel");
+  const countEl = document.getElementById("quizCount");
+
   const topic = topicEl.value.trim();
+  const level = levelEl ? levelEl.value : "medium";
+  const count = countEl ? parseInt(countEl.value, 10) : 5;
 
   if (!topic) {
     alert("Please enter a quiz topic.");
@@ -149,7 +154,7 @@ async function generateQuiz() {
   container.innerHTML = "";
 
   try {
-    const data = await postJSON("/api/quiz", { topic });
+    const data = await postJSON("/api/quiz", { topic, count, level });
     const quiz = data.quiz;
 
     if (!quiz || !Array.isArray(quiz.questions)) {
@@ -158,7 +163,7 @@ async function generateQuiz() {
 
     quizState = { score: 0, answered: 0, total: quiz.questions.length };
 
-    document.getElementById("quizTitle").textContent = quiz.title || `${topic} Quiz`;
+    document.getElementById("quizTitle").textContent = quiz.title || `${topic} Quiz (${level.toUpperCase()})`;
     updateScoreBadge();
 
     container.innerHTML = quiz.questions.map((q, idx) => renderQuizQuestion(q, idx)).join("");
